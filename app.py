@@ -48,7 +48,7 @@ if not st.session_state["form_submitted"]:
         size = st.selectbox("2. What is your District Size?", ["Small (Under 3,000 students)", "Medium (3,000 - 10,000 students)", "Large (10,000+ students)"])
         goal = st.selectbox("3. What is your Primary Goal?", ["Cybersecurity Strategy", "Data Privacy Frameworks", "Superintendent Tools Implementation"])
         
-        # FIXED: Using the standard Streamlit form submission handler
+        # Fixed native Streamlit form submission handler
         submit_button = st.form_submit_button("Generate My Guide")
         
         if submit_button:
@@ -96,4 +96,4 @@ else:
             st.session_state["form_submitted"] = False
             st.session_state["chat_history"] = []
             st.session_state["learning_path_data"] = ""
-            st.
+            st.rerun()
