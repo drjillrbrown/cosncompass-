@@ -58,7 +58,6 @@ MULTIMODAL_COSN_CATALOG = {
             "title": "CETL® K-12 CTO's Framework of Essential Skills Foundation Course",
             "url": "https://www.cosn.org/courses-workshops-catalog/",
             "duration": "8 weeks",
-            "type": "Facilitated Course",
             "why": "Provides the foundational competencies required to lead systemic EdTech initiatives across districts."
         },
         {
@@ -96,73 +95,4 @@ MULTIMODAL_COSN_CATALOG = {
             "title": "Smart Budgeting: Preserving Classroom Tech Equity in Tight Fiscal Waves",
             "url": "https://www.cosn.org/edtech-topic/webinar-recording/",
             "duration": "45-minute Panel",
-            "why": "Active operational strategies to defend your technical infrastructure investments during local budget contractions."
-        }
-    ],
-    "CETL® Certification Exam Preparation & Foundation Review": [
-        {
-            "phase": "1. Foundations (Course)",
-            "title": "CoSN Certified Education Chief Technology Officer (CETL) Certification Program",
-            "url": "https://www.cosn.org/professional-development/cetl-certification/",
-            "duration": "Self-Paced or Cohort",
-            "why": "The premier national credential demonstrating absolute mastery of the K-12 EdTech leadership matrix."
-        },
-        {
-            "phase": "2. Intermediate (Workshop & Toolkit)",
-            "title": "CETL® Examination Content Domain Review & Study Guide",
-            "url": "https://www.cosn.org/professional-development/cetl-certification/",
-            "duration": "Comprehensive Manual",
-            "why": "Provides exact framework breakdowns for the three core leadership domains tested on the exam."
-        },
-        {
-            "phase": "3. Advanced (Webinar & Podcast)",
-            "title": "The Road to the CETL: Tips and Strategies from Newly Certified Leaders",
-            "url": "https://www.cosn.org/edtech-topic/webinar-recording/",
-            "duration": "1-hour Community Recording",
-            "why": "Veteran study tips, preparation timeline schedules, and test-taking advice from recent certified designees."
-        }
-    ]
-}
-
-# Secure Fallback Routine for Memory Stream Alignment
-if "form_submitted" not in st.session_state:
-    st.session_state["form_submitted"] = False
-if "chat_history" not in st.session_state:
-    st.session_state["chat_history"] = []
-if "learning_path_data" not in st.session_state:
-    st.session_state["learning_path_data"] = ""
-if "selected_focus" not in st.session_state:
-    st.session_state["selected_focus"] = list(MULTIMODAL_COSN_CATALOG.keys())[0]
-
-def build_multimodal_path(role, exp, size, focus, time_commit):
-    suggestions = MULTIMODAL_COSN_CATALOG.get(focus, [])
-    md_output = f"""
-### 🗺️ Your Customized CoSN Multi-Format Learning Path
-
-**👤 Leadership Profile Summary:**
-* **Role/Context:** {role} ({exp})
-* **District Footprint:** {size}
-* **Realistic Commitment:** {time_commit}
-* **Primary Track Target:** {focus}
-
----
-### 🎓 Your 3-Step Media Ecosystem Roadmap
-"""
-    for item in suggestions:
-        md_output += f"""
-#### **📍 Phase {item['phase']}**
-* **Resource:** [{item['title']}]({item['url']})
-* **Time Commitment:** {item['duration']}
-* **Strategic Context:** {item['why']}
-"""
-    return md_output
-
-def generate_catalog_response(user_query, current_focus):
-    query_lower = user_query.lower()
-    suggestions = MULTIMODAL_COSN_CATALOG.get(current_focus, [])
-    if not suggestions:
-        return "### 📋 Profile Alignment Reference:\nI am calibrated to only use our curated data catalog to assist you with your active track configuration."
-
-    if any(k in query_lower for k in ["cabinet", "board", "superintendent", "involve", "engage"]):
-        return f"### 🏛️ Cabinet Engagement Strategy ({current_focus}):\n\nTo engage leadership, introduce: **\"{suggestions[1]['title']}\"**. Framing this as an asset protection measure rather than an IT task ensures stakeholder buy-in."
-    return f"### 📋 Catalog Cross-Reference:\n
+            "
