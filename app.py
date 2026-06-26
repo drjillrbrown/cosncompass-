@@ -170,7 +170,7 @@ def generate_catalog_response(user_query, current_focus):
     if any(k in query_lower for k in ["cabinet", "board", "superintendent", "involve", "engage"]):
         resp = f"### 🏛️ Cabinet Engagement Strategy ({current_focus}):\n\n"
         resp += f"To effectively engage your executive leadership on this track, introduce the intermediate resource: **\"{suggestions[1]['title']}\"**. "
-        resp += f"Framing this to your cabinet as an asset protection and strategic continuity measure rather than an isolated technical task ensures baseline alignment."
+        resp += f"Framing this to your cabinet as an asset protection measure ensures baseline alignment."
         return resp
         
     fallback = f"### 📋 Catalog Cross-Reference:\n\n"
@@ -178,8 +178,64 @@ def generate_catalog_response(user_query, current_focus):
     fallback += f"* **Course:** {suggestions[0]['title']} ({suggestions[0]['duration']})\n"
     fallback += f"* **Workshop:** {suggestions[1]['title']} ({suggestions[1]['duration']})\n"
     fallback += f"* **Webinar/Audio:** {suggestions[2]['title']} ({suggestions[2]['duration']})\n\n"
-    fallback += "Review these active hyperlinks in your right dashboard layout panel to select the right medium for your goals."
     return fallback
 
 # Interface Presentation Layer
-if not st.session_state
+if not st.session_state["form_submitted"]:
+    st.title("🎯 Welcome to the CoSN PL AI Guide")
+    st.subheader("Please complete your professional baseline profile to customize your roadmap:")
+    with st.form("intake_form"):
+        role = st.selectbox("1. What is your current educational leadership role?", [
+            "Chief Technology Officer (CTO) / Chief Information Officer (CIO)", 
+            "Director of Technology / Technology Coordinator",
+            "Superintendent / Assistant Superintendent",
+            "Instructional Technology Coach / Specialist",
+            "Network Administrator / Cybersecurity Specialist",
+            "Other Education Stakeholder"
+        ])
+        exp = st.selectbox("2. How many years of experience do you have in this role?", [
+            "New to the role (0-2 years)", 
+            "Mid-career professional (3-5 years)", 
+            "Seasoned veteran (6+ years)"
+        ])
+        size = st.selectbox("3. What size is your school district?", [
+            "Small District (Fewer than 2,500 students)", 
+            "Medium District (2,500 – 10,000 students)", 
+            "Large District (More than 10,000 students)"
+        ])
+        focus = st.selectbox("4. What are your primary focus areas for professional growth right now?", list(MULTIMODAL_COSN_CATALOG.keys()))
+        time_commit = st.selectbox("5. How much time can you realistically commit to learning each week?", [
+            "1 Hour per week (Quick reference tools & checklists)",
+            "2-3 Hours per week (Focused webinar series & brief workshops)",
+            "4-5 Hours per week (In-depth structured courses & tabletop exercises)",
+            "5+ Hours per week (Comprehensive pathways & leadership modules)"
+        ])
+        
+        if st.form_submit_button("Generate My Guide"):
+            st.session_state["selected_focus"] = focus
+            st.session_state["learning_path_data"] = build_multimodal_path(role, exp, size, focus, time_commit)
+            st.session_state["chat_history"].append({"role": "assistant", "content": f"Calibrated for **{focus}**. Let's begin optimization."})
+            st.session_state["form_submitted"] = True
+            st.rerun()
+else:
+    left_col, right_col = st.columns([1, 1], gap="large")
+    with left_col:
+        st.header("💬 AI Assistant Chat")
+        for message in st.session_state["chat_history"]:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+        if user_prompt := st.chat_input("Ask a follow-up question..."):
+            with st.chat_message("user"): st.markdown(user_prompt)
+            st.session_state["chat_history"].append({"role": "user", "content": user_prompt})
+            with st.chat_message("assistant"):
+                reply = generate_catalog_response(user_prompt, st.session_state["selected_focus"])
+                st.markdown(reply)
+            st.session_state["chat_history"].append({"role": "assistant", "content": reply})
+    with right_col:
+        st.header("📋 Your Custom Learning Path")
+        st.markdown(st.session_state["learning_path_data"])
+        if st.button("Reset Profile"):
+            st.session_state["form_submitted"] = False
+            st.session_state["chat_history"] = []
+            st.session_state["learning_path_data"] = ""
+            st.rerun()
