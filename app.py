@@ -9,10 +9,9 @@ if "cosn_api_key" not in st.session_state:
     if "COSN_API_KEY" in st.secrets:
         st.session_state["cosn_api_key"] = st.secrets["COSN_API_KEY"]
     else:
-        # Fallback to keep the app functional locally or if the secret isn't configured yet
         st.session_state["cosn_api_key"] = "MOCK_MODE_ACTIVE"
 
-# Initialize state flags and mock database
+# Initialize state flags and session records
 if "form_submitted" not in st.session_state:
     st.session_state["form_submitted"] = False
 if "chat_history" not in st.session_state:
@@ -20,40 +19,103 @@ if "chat_history" not in st.session_state:
 if "learning_path_data" not in st.session_state:
     st.session_state["learning_path_data"] = ""
 
-def generate_mock_path(role, size, goal):
-    """Simulates the architecture's Option 1 mock API response."""
+def generate_mock_path(role, exp, size, focus, time_commit):
+    """Generates the targeted framework plan matching all 5 user metrics."""
     return f"""
-    ### 🗺️ Custom Learning Path for {role}
-    **District Profile:** {size} | **Primary Focus:** {goal}
+    ### 🗺️ Custom CoSN Learning Path
+    
+    **👤 Profile Metrics:**
+    * **Role:** {role} ({exp})
+    * **District Scope:** {size}
+    * **Target Track:** {focus}
+    * **Weekly Commitment Capacity:** {time_commit}
     
     ---
-    #### 🚀 Phase 1: Foundation & Alignment
-    * **Time Commitment:** 2-3 Hours (Week 1)
-    * **Action Items:** Review CoSN Framework essentials tailored for your dynamic goals.
-    * **Resource:** [CoSN Core Framework Resource Link](https://www.cosn.org)
+    #### 🚀 Phase 1: Foundation & Strategic Visioning
+    * **Velocity Matrix:** Adjusted for *{time_commit}* Allocation.
+    * **Action Items:** Review baseline CoSN resource infrastructure matching **{focus}** parameters.
+    * **Resource Link:** [CoSN Professional Learning Framework](https://www.cosn.org)
     
-    #### 🔒 Phase 2: Implementation & Risk Assessment
-    * **Time Commitment:** 5 Hours (Weeks 2-3)
-    * **Action Items:** Conduct initial system diagnostics based on standard security vectors.
-    * **Resource:** [CoSN Cybersecurity Toolkit](https://www.cosn.org)
+    #### 🔒 Phase 2: Core Operational Implementation
+    * **Operational Vector:** Tailored specifically for **{role}** leadership tracks within a **{size}**.
+    * **Action Items:** Deep-dive into regional administrative guidelines and peer-tested toolkits.
+    * **Resource Link:** [CoSN Member Tools & Assessment Resources](https://www.cosn.org)
     """
 
-# --- UX Flow Component: 3-Question Intake Form ---
+# --- UX Flow Component: Expanded Onboarding Assessment ---
 if not st.session_state["form_submitted"]:
     st.title("🎯 Welcome to the CoSN PL AI Guide")
-    st.subheader("Let's quick-start your experience. Tell us about your profile:")
+    st.subheader("Please complete your professional baseline profile to customize your roadmap:")
     
     with st.form("intake_form"):
-        role = st.selectbox("1. What is your primary Role?", ["Superintendent", "CTO / Technology Director", "Instructional Coach", "District Administrator"])
-        size = st.selectbox("2. What is your District Size?", ["Small (Under 3,000 students)", "Medium (3,000 - 10,000 students)", "Large (10,000+ students)"])
-        goal = st.selectbox("3. What is your Primary Goal?", ["Cybersecurity Strategy", "Data Privacy Frameworks", "Superintendent Tools Implementation"])
+        # Question 1
+        role = st.selectbox(
+            "1. What is your current educational leadership role?", 
+            [
+                "Chief Technology Officer (CTO) / Chief Information Officer (CIO)",
+                "Director of Technology / Technology Coordinator",
+                "Superintendent / Assistant Superintendent",
+                "Instructional Technology Coach / Specialist",
+                "Network Administrator / Cybersecurity Specialist",
+                "Other Education Stakeholder"
+            ]
+        )
         
-        # Fixed native Streamlit form submission handler
+        # Question 2
+        exp = st.selectbox(
+            "2. How many years of experience do you have in this role?",
+            [
+                "New to the role (0-2 years)",
+                "Mid-career professional (3-5 years)",
+                "Seasoned veteran (6+ years)"
+            ]
+        )
+        
+        # Question 3
+        size = st.selectbox(
+            "3. What size is your school district?",
+            [
+                "Small District (Fewer than 2,500 students)",
+                "Medium District (2,500 – 10,000 students)",
+                "Large District (More than 10,000 students)"
+            ]
+        )
+        
+        # Question 4
+        focus = st.selectbox(
+            "4. What are your primary focus areas for professional growth right now?",
+            [
+                "Strategic Leadership, District Visioning & Stakeholder Communication",
+                "IT Management, Budgeting & Infrastructure",
+                "CETL® Certification Exam Preparation & Foundation Review",
+                "Cybersecurity Planning, Risk Assessments & Frameworks",
+                "Incident Response & Tabletop Exercises"
+            ]
+        )
+        
+        # Question 5
+        time_commit = st.selectbox(
+            "5. How much time can you realistically commit to learning each week?",
+            [
+                "1 Hour per week (Quick reference tools & checklists)",
+                "2-3 Hours per week (Focused webinar series & brief workshops)",
+                "4-5 Hours per week (In-depth structured courses & tabletop exercises)",
+                "5+ Hours per week (Comprehensive pathways & leadership modules)"
+            ]
+        )
+        
+        # Native Streamlit form execution button
         submit_button = st.form_submit_button("Generate My Guide")
         
         if submit_button:
-            st.session_state["learning_path_data"] = generate_mock_path(role, size, goal)
-            st.session_state["chat_history"].append({"role": "assistant", "content": f"Hello! I've analyzed your profile as a **{role}** handling a **{size}** district. I have customized your learning path on the right dashboard pane. How else can I assist you with **{goal}** today?"})
+            st.session_state["learning_path_data"] = generate_mock_path(role, exp, size, focus, time_commit)
+            
+            initial_greeting = (
+                f"Hello! I've cataloged your profile as a **{role}** ({exp}) managing a **{size}**. "
+                f"Your customized training path focusing on **{focus}** has been built on your right dashboard panel. "
+                f"How can I assist you with your weekly target of **{time_commit}** today?"
+            )
+            st.session_state["chat_history"].append({"role": "assistant", "content": initial_greeting})
             st.session_state["form_submitted"] = True
             st.rerun()
 
@@ -81,7 +143,7 @@ else:
                 response_placeholder = st.empty()
                 response_placeholder.markdown("*Searching CoSN specifications...*")
                 time.sleep(0.8)
-                mock_reply = f"I've evaluated your point regarding '{user_prompt}'. According to standard CoSN protocols, you should align this with your current infrastructure baseline."
+                mock_reply = f"I've processed your question regarding '{user_prompt}'. We suggest referencing the operational toolkits on the right panel to execute this strategy effectively."
                 response_placeholder.markdown(mock_reply)
             
             st.session_state["chat_history"].append({"role": "assistant", "content": mock_reply})
@@ -89,7 +151,7 @@ else:
     # Right Column: Scannable/Printable Learning Path View
     with right_col:
         st.header("📋 Your Custom Learning Path")
-        st.info("💡 Pro-Tip: You can print this dashboard layout directly from your browser menu (Ctrl+P / Cmd+P).")
+        st.info("💡 Pro-Tip: You can print this layout directly from your browser menu (Ctrl+P / Cmd+P).")
         st.markdown(st.session_state["learning_path_data"])
         
         if st.button("Reset / New Profile Intake"):
