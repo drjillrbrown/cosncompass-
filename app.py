@@ -4,7 +4,7 @@ import time
 # Force wide mode instantly before executing any secondary properties
 st.set_page_config(layout="wide", page_title="CoSN PL AI Guide")
 
-# --- Production Data Layer: Production-grade multi-format catalog mapping ---
+# --- Production Data Layer: Full 5-Track Multi-Format Catalog Mapping ---
 MULTIMODAL_COSN_CATALOG = {
     "Cybersecurity & Incident Response": [
         {
@@ -49,7 +49,7 @@ MULTIMODAL_COSN_CATALOG = {
             "title": "Managing Student Data Privacy: Highlights of the National Student Data Privacy Report",
             "url": "https://www.cosn.org/edtech-topic/webinar-recording/",
             "duration": "1-hour Panel Recording & Podcast",
-            "why": "A panel of active superintendents and CTOs sharing real-world compliance successes and legal hurdles under FERPA/COPPA updates."
+            "why": "A panel of active interim superintendents and CTOs sharing real-world compliance successes and legal hurdles under FERPA/COPPA updates."
         }
     ],
     "Strategic Leadership, District Visioning & Stakeholder Communication": [
@@ -95,4 +95,61 @@ MULTIMODAL_COSN_CATALOG = {
             "title": "Smart Budgeting: Preserving Classroom Tech Equity in Tight Fiscal Waves",
             "url": "https://www.cosn.org/edtech-topic/webinar-recording/",
             "duration": "45-minute Panel",
-            "
+            "why": "Active operational strategies to defend your technical infrastructure investments during local budget contractions."
+        }
+    ],
+    "CETL® Certification Exam Preparation & Foundation Review": [
+        {
+            "phase": "1. Foundations (Course)",
+            "title": "CoSN Certified Education Chief Technology Officer (CETL) Certification Program",
+            "url": "https://www.cosn.org/professional-development/cetl-certification/",
+            "duration": "Self-Paced or Cohort",
+            "why": "The premier national credential demonstrating absolute mastery of the K-12 EdTech leadership matrix."
+        },
+        {
+            "phase": "2. Intermediate (Workshop & Toolkit)",
+            "title": "CETL® Examination Content Domain Review & Study Guide",
+            "url": "https://www.cosn.org/professional-development/cetl-certification/",
+            "duration": "Comprehensive Manual",
+            "why": "Provides exact framework breakdowns for the three core leadership domains tested on the exam."
+        },
+        {
+            "phase": "3. Advanced (Webinar & Podcast)",
+            "title": "The Road to the CETL: Tips and Strategies from Newly Certified Leaders",
+            "url": "https://www.cosn.org/edtech-topic/webinar-recording/",
+            "duration": "1-hour Community Recording",
+            "why": "Veteran study tips, preparation timeline schedules, and test-taking advice from recent certified designees."
+        }
+    ]
+}
+
+# Secure Fallback Routine for Memory Stream Alignment
+if "form_submitted" not in st.session_state:
+    st.session_state["form_submitted"] = False
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []
+if "learning_path_data" not in st.session_state:
+    st.session_state["learning_path_data"] = ""
+if "selected_focus" not in st.session_state:
+    st.session_state["selected_focus"] = list(MULTIMODAL_COSN_CATALOG.keys())[0]
+
+def build_multimodal_path(role, exp, size, focus, time_commit):
+    suggestions = MULTIMODAL_COSN_CATALOG.get(focus, [])
+    md_output = f"""
+### 🗺️ Your Customized CoSN Multi-Format Learning Path
+
+**👤 Leadership Profile Summary:**
+* **Role/Context:** {role}
+* **Experience Level:** {exp}
+* **District Footprint:** {size}
+* **Realistic Commitment:** {time_commit}
+* **Primary Track Target:** {focus}
+
+---
+### 🎓 Your 3-Step Media Ecosystem Roadmap
+"""
+    for item in suggestions:
+        md_output += f"""
+#### **📍 Phase {item['phase']}**
+* **Resource:** [{item['title']}]({item['url']})
+* **Time Commitment:**
