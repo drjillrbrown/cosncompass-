@@ -135,21 +135,49 @@ if "selected_focus" not in st.session_state:
 
 def build_multimodal_path(role, exp, size, focus, time_commit):
     suggestions = MULTIMODAL_COSN_CATALOG.get(focus, [])
-    md_output = f"""
-### 🗺️ Your Customized CoSN Multi-Format Learning Path
-
-**👤 Leadership Profile Summary:**
-* **Role/Context:** {role}
-* **Experience Level:** {exp}
-* **District Footprint:** {size}
-* **Realistic Commitment:** {time_commit}
-* **Primary Track Target:** {focus}
-
----
-### 🎓 Your 3-Step Media Ecosystem Roadmap
-"""
+    
+    # Header block built using standard string properties
+    md_output = "### 🗺️ Your Customized CoSN Multi-Format Learning Path\n\n"
+    md_output += f"* **Role/Context:** {role}\n"
+    md_output += f"* **Experience Level:** {exp}\n"
+    md_output += f"* **District Footprint:** {size}\n"
+    md_output += f"* **Realistic Commitment:** {time_commit}\n"
+    md_output += f"* **Primary Track Target:** {focus}\n\n"
+    md_output += "---\n### 🎓 Your 3-Step Media Ecosystem Roadmap\n\n"
+    
+    # Looping rows cleanly line-by-line to avoid multiline literal breaks
     for item in suggestions:
-        md_output += f"""
-#### **📍 Phase {item['phase']}**
-* **Resource:** [{item['title']}]({item['url']})
-* **Time Commitment:**
+        md_output += f"#### 📍 Phase {item['phase']}\n"
+        md_output += f"* **Resource:** [{item['title']}]({item['url']})\n"
+        md_output += f"* **Time Commitment:** {item['duration']}\n"
+        md_output += f"* **Strategic Context:** {item['why']}\n\n"
+        
+    return md_output
+
+def generate_catalog_response(user_query, current_focus):
+    query_lower = user_query.lower()
+    suggestions = MULTIMODAL_COSN_CATALOG.get(current_focus, [])
+    
+    if not suggestions or len(suggestions) < 3:
+        return "### 📋 Profile Alignment Reference:\nI am calibrated to use our curated multi-format data catalog to assist you."
+
+    if any(k in query_lower for k in ["cabinet", "board", "superintendent", "involve", "engage"]):
+        resp = f"### 🏛️ Cabinet Engagement Strategy ({current_focus}):\n\n"
+        resp += f"To effectively engage your executive leadership on this track, introduce the intermediate resource: **\"{suggestions[1]['title']}\"**. "
+        resp += f"Framing this to your cabinet as an asset protection and strategic continuity measure rather than an isolated technical task ensures baseline alignment."
+        return resp
+        
+    fallback = f"### 📋 Catalog Cross-Reference:\n\n"
+    fallback += f"Regarding your query on '{user_query}', your active **{current_focus}** track provides structural support via three distinct formats:\n"
+    fallback += f"* **Course:** {suggestions[0]['title']} ({suggestions[0]['duration']})\n"
+    fallback += f"* **Workshop:** {suggestions[1]['title']} ({suggestions[1]['duration']})\n"
+    fallback += f"* **Webinar/Audio:** {suggestions[2]['title']} ({suggestions[2]['duration']})\n\n"
+    fallback += "Review these active hyperlinks in your right dashboard layout panel to select the right medium for your goals."
+    return fallback
+
+# Interface Presentation Layer
+if not st.session_state["form_submitted"]:
+    st.title("🎯 Welcome to the CoSN PL AI Guide")
+    st.subheader("Please complete your professional baseline profile to customize your roadmap:")
+    with st.form("intake_form"):
+        role = st.selectbox
